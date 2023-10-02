@@ -1,3 +1,8 @@
+# Feito por:
+# Bernardo Siqueira Esteves dos Reis - TIA
+# Luis Henrique Bastos Tamura - TIA
+# Vitor Sant'Ana Navarro - TIA 320.224-76
+
 import pygame
 from pygame.locals import *
 
