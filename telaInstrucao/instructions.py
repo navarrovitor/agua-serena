@@ -10,20 +10,20 @@ WIDTH, HEIGHT = 1920, 1080
 BUTTON_WIDTH, BUTTON_HEIGHT = 200, 50
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
-FONT = pygame.font.Font('telaInicial/telaInstrucao/fonts/Blomberg.otf', 36)
+FONT = pygame.font.Font('telaInstrucao/fonts/Blomberg.otf', 36)
 
 # Create the game window
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Pygame Menu")
-background_image = pygame.image.load('telaInicial/telaInstrucao/images/instructions_image.png')
+background_image = pygame.image.load('telaInstrucao/images/instructions_image.png')
 background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))
-arrows_image_up = pygame.image.load('telaInicial/telaInstrucao/images/pixels_arrows-UP.png')
+arrows_image_up = pygame.image.load('telaInstrucao/images/pixels_arrows-UP.png')
 arrows_image_up = pygame.transform.scale(arrows_image_up, (300, 200))
-arrows_image_LR = pygame.image.load('telaInicial/telaInstrucao/images/pixels_arrows-LR.png')
+arrows_image_LR = pygame.image.load('telaInstrucao/images/pixels_arrows-LR.png')
 arrows_image_LR = pygame.transform.scale(arrows_image_LR, (300, 200))
 
-image_directory_jump = "telaInicial/telaInstrucao/images/characterJump"
-image_directory_walk = "telaInicial/telaInstrucao/images/characterWalk"
+image_directory_jump = "telaInstrucao/images/characterJump"
+image_directory_walk = "telaInstrucao/images/characterWalk"
 
 images_names_jump = ["character_malePerson_run0.png","character_malePerson_run1.png","character_malePerson_run2.png","character_malePerson_jump.png","character_malePerson_jump.png","character_malePerson_jump.png","character_malePerson_shove.png"]
 images_jump = [pygame.image.load(os.path.join(image_directory_jump, img)) for img in images_names_jump]
@@ -42,7 +42,7 @@ def draw_text(text, font, color, x, y):
 
 def instructions():
     current_image = 0
-    pygame.mixer.music.load('telaInicial/telaInstrucao/musicas/back_music.mp3')
+    pygame.mixer.music.load('telaInstrucao/musicas/back_music.mp3')
     pygame.mixer.music.set_volume(0.5)  # Set the volume to 50%
     pygame.mixer.music.play(-1)  # Play the background music on loop
     while True:
@@ -71,6 +71,8 @@ def instructions():
         draw_text("Instructions", FONT, WHITE, WIDTH // 2, 50)
         draw_text("Press the 'UP' Arrow Key to Jump", FONT, WHITE, 550, 650)
         draw_text("Press the Left or Right arrow key to move", FONT, WHITE, 1400, 650)
+
+        draw_text("Avoid the Water and the Slimes", FONT, BLACK, WIDTH // 2, 750)
 
         pygame.time.delay(80)
         pygame.display.update()

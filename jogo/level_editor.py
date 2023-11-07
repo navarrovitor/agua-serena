@@ -20,20 +20,20 @@ pygame.display.set_caption('Level Editor')
 
 
 #load images
-sun_img = pygame.image.load('img/sun.png')
+sun_img = pygame.image.load('./jogo/img/sun.png')
 sun_img = pygame.transform.scale(sun_img, (tile_size, tile_size))
-bg_img = pygame.image.load('img/sky.png')
+bg_img = pygame.image.load('./jogo/img/sky.png')
 bg_img = pygame.transform.scale(bg_img, (screen_width, screen_height - margin))
-dirt_img = pygame.image.load('img/dirt.png')
-grass_img = pygame.image.load('img/grass.png')
-blob_img = pygame.image.load('img/blob.png')
-platform_x_img = pygame.image.load('img/platform_x.png')
-platform_y_img = pygame.image.load('img/platform_y.png')
-lava_img = pygame.image.load('img/lava.png')
-coin_img = pygame.image.load('img/coin.png')
-exit_img = pygame.image.load('img/exit.png')
-save_img = pygame.image.load('img/save_btn.png')
-load_img = pygame.image.load('img/load_btn.png')
+castleBlock_img = pygame.image.load('./jogo/img/castleBlock.png')
+castleBlock2_img = pygame.image.load('./jogo/img/castleBlock2.png')
+blob_img = pygame.image.load('./jogo/img/blob.png')
+platform_x_img = pygame.image.load('./jogo/img/platform_x.png')
+platform_y_img = pygame.image.load('./jogo/img/platform_y.png')
+lava_img = pygame.image.load('./jogo/img/lava.png')
+coin_img = pygame.image.load('./jogo/img/coin.png')
+exit_img = pygame.image.load('./jogo/img/exit.png')
+save_img = pygame.image.load('./jogo/img/save_btn.png')
+load_img = pygame.image.load('./jogo/img/load_btn.png')
 
 
 #define game variables
@@ -57,12 +57,6 @@ def draw_text(text, font, text_col, x, y):
 	img = font.render(text, True, text_col)
 	screen.blit(img, (x, y))
 
-def draw_grid():
-	for c in range(21):
-		#vertical lines
-		pygame.draw.line(screen, white, (c * tile_size, 0), (c * tile_size, screen_height - margin))
-		#horizontal lines
-		pygame.draw.line(screen, white, (0, c * tile_size), (screen_width, c * tile_size))
 
 
 def draw_world():
@@ -70,12 +64,12 @@ def draw_world():
 		for col in range(20):
 			if world_data[row][col] > 0:
 				if world_data[row][col] == 1:
-					#dirt blocks
-					img = pygame.transform.scale(dirt_img, (tile_size, tile_size))
+					#castleBlock blocks
+					img = pygame.transform.scale(castleBlock_img, (tile_size, tile_size))
 					screen.blit(img, (col * tile_size, row * tile_size))
 				if world_data[row][col] == 2:
-					#grass blocks
-					img = pygame.transform.scale(grass_img, (tile_size, tile_size))
+					#castleBlock2 blocks
+					img = pygame.transform.scale(castleBlock2_img, (tile_size, tile_size))
 					screen.blit(img, (col * tile_size, row * tile_size))
 				if world_data[row][col] == 3:
 					#enemy blocks
@@ -149,20 +143,17 @@ while run:
 	#load and save level
 	if save_button.draw():
 		#save level data
-		pickle_out = open(f'level{level}_data', 'wb')
+		pickle_out = open(f'./jogo/level{level}_data', 'wb')
 		pickle.dump(world_data, pickle_out)
 		pickle_out.close()
 	if load_button.draw():
 		#load in level data
-		if path.exists(f'level{level}_data'):
-			pickle_in = open(f'level{level}_data', 'rb')
+		if path.exists(f'./jogo/level{level}_data'):
+			pickle_in = open(f'./jogo/level{level}_data', 'rb')
 			world_data = pickle.load(pickle_in)
 
 
-	#show the grid and draw the level tiles
-	draw_grid()
 	draw_world()
-
 
 	#text showing current level
 	draw_text(f'Level: {level}', font, white, tile_size, screen_height - 60)

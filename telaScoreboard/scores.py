@@ -10,7 +10,7 @@ WIDTH, HEIGHT = 1920, 1080
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GREEN = (0, 255, 0)
-FONT = pygame.font.Font('telaInicial/telaScoreboard/fonts/arcade.ttf', 42)
+FONT = pygame.font.Font('telaScoreboard/fonts/arcade.ttf', 42)
 
 # Create the game window
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -23,7 +23,7 @@ def draw_text(text, font, color, x, y):
     screen.blit(text_surface, text_rect)
 
 def show_scoreboard():
-    pygame.mixer.music.load("telaInicial/telaScoreboard/musicas/boardmusic.mp3")
+    pygame.mixer.music.load("telaScoreboard/musicas/boardmusic.mp3")
     # Play the background music
     pygame.mixer.music.play(-1)  # -1 to loop the music indefinitely
 
@@ -32,7 +32,7 @@ def show_scoreboard():
     
     scores = []
     try:
-        with open('telaInicial/telaScoreboard/scores.csv', 'r') as file:
+        with open('telaScoreboard/scores.csv', 'r') as file:
             reader = csv.reader(file)
             next(reader)  # Skip the header row
             for row in reader:
