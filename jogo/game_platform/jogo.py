@@ -3,6 +3,7 @@ from pygame.locals import *
 from pygame import mixer
 import pickle
 from os import path
+from enum import Enum
 
 pygame.mixer.pre_init(44100, -16, 2, 512)
 mixer.init()
@@ -26,8 +27,8 @@ font_score = pygame.font.SysFont('Bauhaus 93', 30)
 #define game variables
 tile_size = 50
 game_over = 0
-main_menu = False
-level = 7
+main_menu = True
+level = 1
 max_levels = 8
 score = 0
 
@@ -38,13 +39,13 @@ blue = (0, 0, 255)
 
 
 #load images
-
 sun_img = pygame.image.load('./jogo/img/sun.png')
 restart_img = pygame.image.load('./jogo/img/restart_btn.png')
 start_img = pygame.image.load('./jogo/img/start_btn.png')
 shrek_img = pygame.image.load('./jogo/img/shrek.jpg')
 exit_img = pygame.image.load('./jogo/img/exit_btn.png')
 exit_img = pygame.transform.scale(exit_img, (100, 50))
+
 
 #load sounds
 pygame.mixer.music.load('./jogo/img/music.mp3')
@@ -59,14 +60,29 @@ game_over_fx.set_volume(0.5)
 shrek_fx = pygame.mixer.Sound('./jogo/img/shrek.mp3')
 shrek_fx.set_volume(0.5)
 
+# Create an enum for character selection
+class Character(Enum):
+    MALE = 1
+    FEMALE = 2
+
+# Define images for both characters
+character_images = {
+    Character.MALE: [
+        pygame.image.load(f'./jogo/img/bonecoM/walk{num}.png') for num in range(0, 9)
+    ],
+    Character.FEMALE: [
+        pygame.image.load(f'./jogo/img/bonecoF/walk{num}.png') for num in range(0, 9)
+    ]
+}
+
 def draw_text(text, font, text_col, x, y):
 	img = font.render(text, True, text_col)
 	screen.blit(img, (x, y))
 
 
 #function to reset level
-def reset_level(level):
-	player.reset(100, screen_height - 130)
+def reset_level(level, player):
+	player.reset(100, screen_height - 130, selected_character)
 	blob_group.empty()
 	water_group.empty()
 	exit_group.empty()
@@ -111,10 +127,8 @@ class Button():
 
 
 class Player():
-	def __init__(self, x, y):
-		self.reset(x, y)
-
-
+	def __init__(self, x, y, character):
+		self.reset(x, y, character)
 
 	def update(self, game_over):
 		dx = 0
@@ -146,7 +160,6 @@ class Player():
 				if self.direction == -1:
 					self.image = self.images_left[self.index]
 
-
 			#handle animation
 			if self.counter > walk_cooldown:
 				self.counter = 0	
@@ -157,7 +170,6 @@ class Player():
 					self.image = self.images_right[self.index]
 				if self.direction == -1:
 					self.image = self.images_left[self.index]
-
 
 			#add gravity
 			self.vel_y += 1
@@ -215,15 +227,19 @@ class Player():
 
 		return game_over
 
+	def reset(self, x, y, character):
+		if character == Character.MALE:
+			character_folder = 'bonecoM'
+		else:
+			character_folder = 'bonecoF'
 
-	def reset(self, x, y):
 		self.images_right = []
 		self.images_left = []
 		self.index = 0
 		self.counter = 0
 		for num in range(0, 9):
-			img_right = pygame.image.load(f'./jogo/img/bonecoM/walk{num}.png')
-			img_right = pygame.transform.scale(img_right, (50, 80))
+			img_right = pygame.image.load(f'./jogo/img/{character_folder}/walk{num}.png')
+			img_right = pygame.transform.scale(img_right, (45, 65))
 			img_left = pygame.transform.flip(img_right, True, False)
 			self.images_right.append(img_right)
 			self.images_left.append(img_left)
@@ -238,6 +254,7 @@ class Player():
 		self.jumped = False
 		self.direction = 0
 		self.in_air = True
+
 
 
 class World():
@@ -365,10 +382,34 @@ class Scoreboard():
         self.screen.blit(txt_surface, (self.input_box.x + 5, self.input_box.y + 5))
         pygame.draw.rect(self.screen, self.color, self.input_box, 2)
 
-	
-	
-player = Player(100, screen_height - 130)
+# Create a character selection screen
+def character_selection_screen():
+    run_selection = True
+    selected_character = Character.MALE  # Default character selection
 
+    while run_selection:
+        screen.fill(white)  # Fill the screen with a white background
+
+        # Draw buttons for character selection
+        draw_text('Select a Character', font, blue, screen_width // 2 - 300, screen_height // 2 - 200)
+        male_button.draw()
+        female_button.draw()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run_selection = False
+                pygame.quit()
+            if male_button.draw():
+                selected_character = Character.MALE
+                run_selection = False
+            if female_button.draw():
+                selected_character = Character.FEMALE
+                run_selection = False
+
+        pygame.display.update()
+
+    return selected_character
+	
 blob_group = pygame.sprite.Group()
 water_group = pygame.sprite.Group()
 coin_group = pygame.sprite.Group()
@@ -388,6 +429,8 @@ world = World(world_data)
 restart_button = Button(screen_width // 2 - 50, screen_height // 2 + 100, restart_img)
 start_button = Button(screen_width // 2 - 350, screen_height // 2, start_img)
 exit_button = Button(screen_width - 150, 0, exit_img)
+exit_button2 = Button(screen_width // 2 - 50, screen_height // 2 + 150, exit_img)
+
 
 
 background_images = {
@@ -402,18 +445,26 @@ background_images = {
     # Add more levels as needed
 }
 
+male_button = Button(screen_width // 2 - 250, screen_height // 2, character_images[Character.MALE][0])  # Use appropriate image for the male character
+female_button = Button(screen_width // 2 + 100, screen_height // 2, character_images[Character.FEMALE][0])  # Use appropriate image for the female character
+
+if main_menu:
+	selected_character = character_selection_screen()
+	main_menu = False
+
+	player = Player(100, screen_height - 130, selected_character)
 
 run = True
 scoreboard = Scoreboard(screen)
 while run:
-
 	clock.tick(fps)
+
+
 	if level < max_levels:
 		background = pygame.transform.scale(background_images[level], (screen_width, screen_height))
 		screen.blit(background, (0, 0))
 	else:
 		screen.fill(white)
-
 
 	world.draw()
 
@@ -441,7 +492,8 @@ while run:
 					break
 				scoreboard.handle_event(event)
 			screen.fill(white)
-			draw_text('Digite seu nome para salvar os pontos:', font, blue, 100, 100)
+			draw_text('Digite seu nome:', font, blue, 100, 100)
+			draw_text('Aperte enter para salvar', font, blue, 100, 300)
 			scoreboard.draw()
 			pygame.display.flip()
 		if run:
@@ -454,7 +506,7 @@ while run:
 	if game_over == -1:
 		if restart_button.draw():
 			world_data = []
-			world = reset_level(level)
+			world = reset_level(level, player)
 			game_over = 0
 			score = 0
 
@@ -465,7 +517,7 @@ while run:
 		if level < max_levels:
 			#reset level
 			world_data = []
-			world = reset_level(level)
+			world = reset_level(level, player)
 			game_over = 0
 		else:
 			pygame.mixer.music.pause()
@@ -477,11 +529,28 @@ while run:
 				level = 1
 				#reset level
 				world_data = []
-				world = reset_level(level)
+				world = reset_level(level, player)
 				game_over = 0
 				score = 0
 				shrek_fx.stop()
 				pygame.mixer.music.unpause()
+			if exit_button2.draw():
+				while not scoreboard.done:
+					for event in pygame.event.get():
+						if event.type == pygame.QUIT:
+							run = False
+							break
+						scoreboard.handle_event(event)
+					screen.fill(white)
+					draw_text('Digite seu nome:', font, blue, 100, 100)
+					draw_text('Aperte enter para salvar', font, blue, 100, 300)
+					scoreboard.draw()
+					pygame.display.flip()
+				if run:
+					with open('./telaScoreboard/scores.csv', 'a') as file:
+						file.write(f"{scoreboard.text},{score}\n")
+					scoreboard = Scoreboard(screen)
+					run = False
 
 
 

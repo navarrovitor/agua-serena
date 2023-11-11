@@ -38,6 +38,9 @@ def show_scoreboard():
             for row in reader:
                 player_name, score = row[0], int(row[1])
                 scores.append((player_name, score))
+        # Order the scores by the score value
+        scores = sorted(scores, key=lambda x: x[1], reverse=True)
+        
     except FileNotFoundError:
         print("Score file not found.")
 
